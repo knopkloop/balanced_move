@@ -71,7 +71,7 @@ Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
 
       while (cur)
       {
-        List<T>* nex = cur->next;
+        List<T>* temp = cur->next;
         cur->next = nullptr;
 
         size_t idx = pos / k;
@@ -91,16 +91,25 @@ Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
         }
 
         ++pos;
-        cur = nex;
+        cur = temp;
       }
     }
   }
   catch (...)
   {
-
+    for (size_t i = 0; i < n; ++i)
+    {
+      for (List<T>* cur = res[i]; cur; )
+      {
+        List<T>* temp = cur->next;
+        delete cur;
+        cur = temp;
+      }
+    }
+    throw;
   }
 
+  return res;
 }
-
 
 #endif
