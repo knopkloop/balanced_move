@@ -6,8 +6,6 @@ struct List
 {
   T val;
   List< T >* next;
-
-  List(const T& value) : val(value), next(nullptr) {}
 };
 
 template < class T >
@@ -31,6 +29,19 @@ struct Vec
 template < class T >
 Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
 {
+  size_t total_s = 0;
+  for (size_t i = 0; i < v.s; ++i)
+  {
+    for (List<T>* cur = v[i]; cur; cur = cur->next)
+    {
+      ++total_s;
+    }
+  }
+
+  if (total_s == 0)
+  {
+    return Vec< List<T>* >();
+  }
 }
 
 
