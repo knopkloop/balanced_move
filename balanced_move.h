@@ -1,16 +1,16 @@
 #ifndef BALANCED_MOVE_H
 #define BALANCED_MOVE_H
-#include <iostream>
-template < class T >
+#include <cstddef>
+
+template <class T>
 struct List
 {
   T val;
-  List< T >* next;
-
+  List<T>* next;
   List(const T& v = T(), List<T>* n = nullptr) : val(v), next(n) {}
 };
 
-template < class T >
+template <class T>
 struct Vec
 {
   T* data;
@@ -29,6 +29,16 @@ struct Vec
     delete[] data;
   }
 
+  Vec(const Vec&) = delete;
+  Vec& operator=(const Vec&) = delete;
+
+  Vec(Vec&& other) noexcept : data(other.data), s(other.s), cap(other.cap)
+  {
+    other.data = nullptr;
+    other.s = 0;
+    other.cap = 0;
+  }
+
   T& operator[](size_t id)
   {
     return data[id];
@@ -40,9 +50,11 @@ struct Vec
   }
 };
 
-template < class T >
-Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
+template <class T>
+Vec<List<T>*> balanced_move(Vec<List<T>*> v, size_t k)
 {
+  if (k == 0) k = 1;
+
   size_t total_s = 0;
   for (size_t i = 0; i < v.s; ++i)
   {
@@ -54,12 +66,11 @@ Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
 
   if (total_s == 0)
   {
-    return Vec< List<T>* >();
+    return Vec<List<T>*>();
   }
 
   size_t kol = (total_s + k - 1) / k;
-
-  Vec< List<T> >* res(n);
+  Vec<List<T>*> res(kol);
 
   try
   {
@@ -86,8 +97,8 @@ Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
           while (tail->next)
           {
             tail = tail->next;
-            tail->next = cur;
           }
+          tail->next = cur;
         }
 
         ++pos;
@@ -97,7 +108,7 @@ Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
   }
   catch (...)
   {
-    for (size_t i = 0; i < n; ++i)
+    for (size_t i = 0; i < kol; ++i)
     {
       for (List<T>* cur = res[i]; cur; )
       {

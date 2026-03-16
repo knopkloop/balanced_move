@@ -1,15 +1,15 @@
 #ifndef SUBFUNCTIONS_H
 #define SUBFUNCTIONS_H
-
+#include <iostream>
 #include "balanced_move.h"
 
-template < class T >
-void print_vec(const Vec< List<T>* >& v)
+template <class T>
+void print_vec(const Vec<List<T>*>& v)
 {
   for (size_t i = 0; i < v.s; ++i)
   {
     std::cout << " " << i << ": ";
-    List<T>* cur = v.data[i];
+    List<T>* cur = v[i];
     while (cur)
     {
       std::cout << cur->val << " ";
@@ -19,8 +19,8 @@ void print_vec(const Vec< List<T>* >& v)
   }
 }
 
-template < class T >
-void clean(Vec< List<T>* >&v)
+template <class T>
+void clean(Vec<List<T>*>& v)
 {
   for (size_t i = 0; i < v.s; ++i)
   {
