@@ -6,6 +6,8 @@ struct List
 {
   T val;
   List< T >* next;
+
+  List(const T& v = T(), List<T>* n = nullptr) : val(v), next(n) {}
 };
 
 template < class T >
@@ -14,6 +16,18 @@ struct Vec
   T* data;
   size_t s;
   size_t cap;
+
+  Vec() : data(nullptr), s(0), cap(0) {}
+
+  Vec(size_t size) : s(size), cap(size)
+  {
+    data = new T[size]();
+  }
+
+  ~Vec()
+  {
+    delete[] data;
+  }
 
   T& operator[](size_t id)
   {
@@ -42,6 +56,50 @@ Vec< List<T>* > balanced_move(Vec< List<T>* > v, size_t k)
   {
     return Vec< List<T>* >();
   }
+
+  size_t kol = (total_s + k - 1) / k;
+
+  Vec< List<T> >* res(n);
+
+  try
+  {
+    size_t pos = 0;
+    for (size_t i = 0; i < v.s; ++i)
+    {
+      List<T>* cur = v[i];
+      v[i] = nullptr;
+
+      while (cur)
+      {
+        List<T>* nex = cur->next;
+        cur->next = nullptr;
+
+        size_t idx = pos / k;
+
+        if (!res[idx])
+        {
+          res[idx] = cur;
+        }
+        else
+        {
+          List<T>* tail = res[idx];
+          while (tail->next)
+          {
+            tail = tail->next;
+            tail->next = cur;
+          }
+        }
+
+        ++pos;
+        cur = nex;
+      }
+    }
+  }
+  catch (...)
+  {
+
+  }
+
 }
 
 
