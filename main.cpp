@@ -1,40 +1,122 @@
 #include <iostream>
 
-#include "balanced_move.h"
-#include "subfunctions.h"
-
-int main()
+template <class T>
+struct List
 {
-  Vec<List<int>*> v(5);
+  T val;
+  List<T>* next;
+};
+
+template <class T>
+struct Vec
+{
+  T* data;
+  size_t s;
+  size_t cap;
+};
+
+template <class T>
+Vec<List<T>*> balanced_move(Vec< List<T>* > v, size_t k)
+{
+  if (v.s == 0)
+  {
+    return v;
+  }
+
+  size_t total_s = 0;
+  for (size_t i = 0; i < v.s; ++i)
+  {
+    if (v.data[i])
+    {
+      List<T>* ptr = v.data[i];
+      while(ptr)
+      {
+        ++total_s;
+        ptr = ptr->next;
+      }
+    }
+  }
+
+  size_t kol = (total_s + k - 1) / k;
+  List<T>** heads = nullptr;
+  List<T>** tails = nullptr;
+
+  Vec< List<T>* > res;
+  res.data = nullptr;
+  res.s = kol;
+  res.cap = kol;
+
   try
   {
-    v[0] = new List<int>(1);
-    v[0]->next = new List<int>(2);
-    v[0]->next->next = new List<int>(3);
-    v[0]->next->next->next = new List<int>(4);
+    heads = new List<T>*[kol];
+    tails = new List<T>*[kol];
 
-    v[1] = new List<int>(5);
-    v[1]->next = new List<int>(6);
-
-    v[2] = nullptr;
-
-    v[3] = new List<int>(7);
-    v[3]->next = new List<int>(8);
-    v[3]->next->next = new List<int>(9);
-    v[3]->next->next->next = new List<int>(10);
-
-    v[4] = new List<int>(11);
-
-    print_vec(v);
-
-    Vec<List<int>*> res = balanced_move(std::move(v), 4);
-
-    print_vec(res);
-
-    clean(res);
+    for(size_t i = 0; i < kol; ++i)
+    {
+      heads[i] = nullptr;
+      tails[i] = nullptr;
+    }
   }
-  catch (...)
+  catch (const std::bad_alloc& e)
   {
-    clean(v);
+    delete[] heads;
+    delete[] tails;
+    throw;
+  }
+
+  size_t cnt = 0;
+  try
+  {
+    for(size_t i = 0; i < v.s; ++i)
+    {
+      List<T>* ptr = v.data[i];
+      v.data[i] = nullptr;
+
+      while(ptr)
+      {
+        List<T>* tmp = ptr->next;
+        ptr->next = nullptr;
+
+        size_t idx = cnt / k;
+
+        if (!heads[idx])
+        {
+          heads[idx] = ptr;
+          tails[idx] = ptr;
+        }
+        else
+        {
+          tails[idx]->next = ptr;
+          tails[idx] = ptr;
+        }
+        ++cnt;
+        ptr = tmp;
+      }
+    }
+
+    res.data = heads;
+    delete[] tails;
+
+    return res;
+  }
+  catch(...)
+  {
+    for(size_t i = 0; i < kol; ++i)
+    {
+      List<T> *ptr = heads[i];
+      while(ptr)
+      {
+        List<T>* tmp = ptr->next;
+        delete ptr;
+        ptr = tmp;
+      }
+    }
+
+    delete[] heads;
+    delete[] tails;
+    throw;
   }
 }
+
+int main()
+{}
